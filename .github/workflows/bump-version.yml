@@ -1,0 +1,31 @@
+name: Bump version number
+on:
+  push:
+    branches: ["master"]
+
+# run only single workflow of this type at a time
+concurrency: release
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: "0"
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Append commit hash to changelog
+        run: git rev-parse HEAD >> CHANGELOG.md
+
+      - name: Update CHANGELOG.md
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: CHANGELOG.md
+          commit: "--amend --no-verify --no-edit"
+          push: "--force-with-lease"
