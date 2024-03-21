@@ -23,9 +23,21 @@ jobs:
       - name: Append commit hash to changelog
         run: git rev-parse HEAD >> CHANGELOG.md
 
-      - name: Update CHANGELOG.md
-        uses: EndBug/add-and-commit@v9
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          add: CHANGELOG.md
-          commit: "--amend --no-verify --no-edit"
-          push: "--force-with-lease"
+          # Optional. Local and remote branch name where commit is going to be pushed
+          #  to. Defaults to the current branch.
+          #  You might need to set `create_branch: true` if the branch does not exist.
+          branch: master
+
+          # Optional. Options used by `git-commit`.
+          # See https://git-scm.com/docs/git-commit#_options
+          commit_options: "--no-verify --no-edit --amend"
+
+          # Optional. Options used by `git-add`.
+          # See https://git-scm.com/docs/git-add#_options
+          add_options: "CHANGELOG.md"
+
+          # Optional. Options used by `git-push`.
+          # See https://git-scm.com/docs/git-push#_options
+          push_options: "--force-with-lease"
