@@ -1,0 +1,35 @@
+name: Bump version number
+on:
+  push:
+    branches: ["master"]
+
+# run only single workflow of this type at a time
+concurrency: release
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get last commit message
+        id: latest-tag
+        run: |
+          echo "tag=$(git tag --sort -version:refname --list *.*.* | head -n 1)" >> $GITHUB_OUTPUT
+
+      - name: Append tag to changelog
+        run: echo "${{ steps.latest-tag.outputs.tag }}\n" >> CHANGELOG.md
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "build: update changelog for ${{ steps.latest-tag.outputs.tag }}"
+          commit_options: "--no-verify"
+          file_pattern: "CHANGELOG.md"
