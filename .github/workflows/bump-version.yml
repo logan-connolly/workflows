@@ -26,7 +26,7 @@ jobs:
           echo "tag=$(git tag --sort -version:refname --list *.*.* | head -n 1)" >> $GITHUB_OUTPUT
 
       - name: Append tag to changelog
-        run: echo "${{ steps.latest-tag.outputs.tag }}\n" >> CHANGELOG.md
+        run: echo "${{ steps.latest-tag.outputs.tag }}" >> CHANGELOG.md
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
